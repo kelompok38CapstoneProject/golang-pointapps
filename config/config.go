@@ -11,8 +11,8 @@ import (
 var DB *gorm.DB
 
 func InitDB() {
-	db := "pointapps"
-	connectionString := fmt.Sprintf("root:qqwerty@tcp(0.0.0.0:3306)/%s?parseTime=True", db)
+	db := "point"
+	connectionString := fmt.Sprintf("root:efraim@tcp(127.0.0.1:3306)/%s?parseTime=True", db)
 
 	var err error
 	DB, err = gorm.Open(mysql.Open(connectionString), &gorm.Config{})

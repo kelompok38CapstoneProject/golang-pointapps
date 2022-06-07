@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-
+	"point/middleware"
 	"point/config"
 	"point/models"
 	
@@ -39,8 +39,8 @@ func GetAllUserController(c echo.Context) error {
 	return c.JSON(http.StatusOK, user)
 }
 
-// request POST 'http://127.0.0.1:8080/user/'
-func CreateUserController(c echo.Context) error {
+// request POST 'http://127.0.0.1:8080/singup/'
+func SingupUserController(c echo.Context) error {
 	user := models.Users{}
 	if err := c.Bind(&user); err != nil {
 		fmt.Println(err)
@@ -50,7 +50,14 @@ func CreateUserController(c echo.Context) error {
 		fmt.Println(err)
 		return c.String(http.StatusInternalServerError, "internal server error")
 	}
-	return c.JSON(http.StatusOK, user)
+	token, err := middleware.CreateToken(user.Id, user.Name)
+
+	if err != nil {
+		fmt.Println(err)
+		return c.String(http.StatusInternalServerError, "gagal singup")
+	}
+	userResponse := models.UsersResponse{user.Id, user.Name, user.Email, token}
+	return c.JSON(http.StatusOK, userResponse)
 }
 
 // request PUT 'http://127.0.0.1:8080/user/id'
@@ -99,4 +106,30 @@ func DeleteUserController(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, "internal server error")
 	}
 	return c.JSON(http.StatusOK, user)
+}
+
+// request POST 'http://127.0.0.1:8080/login/'
+func LoginUserController(c echo.Context) error {
+	user := models.Users{}
+	// fmt.Printf("user sebelum bind %#v\n", user)
+	if err := c.Bind(&user); err != nil {
+		fmt.Println(err)
+		return c.String(http.StatusInternalServerError, "internal server error")
+	}
+	// fmt.Printf("user setelah bind %#v\n", user)
+	fmt.Printf("Before insert: %#v\n", user)
+	if err := config.DB.Where("email=? AND password=?", user.Email, user.Password).First(&user).Error; err != nil {
+		fmt.Println(err)
+		return c.String(http.StatusInternalServerError, "gagal login")
+	}
+
+	token, err := middleware.CreateToken(user.Id, user.Name)
+
+	if err != nil {
+		fmt.Println(err)
+		return c.String(http.StatusInternalServerError, "gagal login")
+	}
+	userResponse := models.UsersResponse{user.Id, user.Name, user.Email, token}
+
+	return c.JSON(http.StatusOK, userResponse)
 }

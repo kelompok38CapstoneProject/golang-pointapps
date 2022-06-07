@@ -18,3 +18,9 @@ type Users struct {
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
+type UsersResponse struct {
+	Id    int    `json:"id"`
+	Nama  string `json:"nama" `
+	Email string `json:"email"`
+	Token    string `json:"token"`
+}
