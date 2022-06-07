@@ -1,4 +1,4 @@
-package controller
+package controllers
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"point/config"
-	"point/model"
+	"point/models"
 	
 	"github.com/labstack/echo/v4"
 )
@@ -18,7 +18,7 @@ func GetUserControllerCode(c echo.Context) error {
 		fmt.Println(err)
 		return c.String(http.StatusBadRequest, "invalid id")
 	}
-	var user model.Users
+	var user models.Users
 	if err := config.DB.First(&user, userId).Error; err != nil {
 		fmt.Println(err)
 		return c.String(http.StatusNotFound, "user not found")
@@ -31,7 +31,7 @@ func GetUserControllerCode(c echo.Context) error {
 
 // request GET 'http://127.0.0.1:8080/user/'
 func GetAllUserController(c echo.Context) error {
-	var user []model.Users
+	var user []models.Users
 	if err := config.DB.Find(&user).Error; err != nil {
 		fmt.Println(err)
 		return c.String(http.StatusInternalServerError, "internal server error")
@@ -41,7 +41,7 @@ func GetAllUserController(c echo.Context) error {
 
 // request POST 'http://127.0.0.1:8080/user/'
 func CreateUserController(c echo.Context) error {
-	user := model.Users{}
+	user := models.Users{}
 	if err := c.Bind(&user); err != nil {
 		fmt.Println(err)
 		return c.String(http.StatusInternalServerError, "internal server error")
@@ -60,7 +60,7 @@ func UpdateUserController(c echo.Context) error {
 		fmt.Println(err)
 		return c.String(http.StatusBadRequest, "invalid id")
 	}
-	var user model.Users
+	var user models.Users
 	if err := config.DB.First(&user, userId).Error; err != nil {
 		fmt.Println(err)
 		return c.String(http.StatusNotFound, "user not found")
@@ -86,7 +86,7 @@ func DeleteUserController(c echo.Context) error {
 		fmt.Println(err)
 		return c.String(http.StatusBadRequest, "invalid id")
 	}
-	var user model.Users
+	var user models.Users
 	if err := config.DB.First(&user, userId).Error; err != nil {
 		fmt.Println(err)
 		return c.String(http.StatusNotFound, "user not found")
