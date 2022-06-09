@@ -10,7 +10,6 @@ import (
 func New() *echo.Echo {
 	e := echo.New()
 	//users
-	//
 	e.POST("/singup/", controllers.SingupUserController)
 	e.POST("/login/", controllers.LoginUserController)
 	e.GET("/user/", controllers.GetAllUserController)
@@ -20,5 +19,12 @@ func New() *echo.Echo {
 	ejwt.Use(middleware.JWT([]byte(constant.SECRET_JWT)))
 	ejwt.PUT("/user/:code", controllers.UpdateUserController)
 	ejwt.DELETE("/user/:code", controllers.DeleteUserController)
+	//benefit_categories_controller
+	e.POST("/singup/", controllers.SingupUserController)
+	e.POST("/benefitCategorie/", controllers.CreateBenefitCategorieController)
+	e.GET("/benefitCategorie/", controllers.GetAllBenefitCategorieController)
+	e.GET("/benefitCategorie/:code", controllers.GetBenefitCategorieControllerCode)
+	e.PUT("/benefitCategorie/:code", controllers.UpdateBenefitCategorieController)
+	e.DELETE("/benefitCategorie/:code", controllers.DeleteBenefitCategorieController)
 	return e
 }
