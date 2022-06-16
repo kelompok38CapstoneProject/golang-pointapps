@@ -9,6 +9,7 @@ import (
 	"strconv"
 
 	"github.com/labstack/echo/v4"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // request GET 'http://127.0.0.1:8080/user/id'
@@ -41,22 +42,57 @@ func GetAllUserController(c echo.Context) error {
 
 // request POST 'http://127.0.0.1:8080/singup/'
 func SingupUserController(c echo.Context) error {
-	user := models.Users{}
-	if err := c.Bind(&user); err != nil {
+	var reqUser models.Users
+
+	if err := c.Bind(&reqUser); err != nil {
 		fmt.Println(err)
 		return c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
-	if err := config.DB.Save(&user).Error; err != nil {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(reqUser.Password), bcrypt.DefaultCost)
+	reqUser.Password = string(hashedPassword)
+	if err := config.DB.Save(&reqUser).Error; err != nil {
 		fmt.Println(err)
 		return c.String(http.StatusInternalServerError, "Internal Server Error")
+	}
+	token, err := middlewares.CreateToken(reqUser.Id, reqUser.Name)
+	if err != nil {
+		fmt.Println(err)
+		return c.String(http.StatusInternalServerError, "gagal singup")
+	}
+	userResponse := models.UsersResponse{reqUser.Id, reqUser.Name, reqUser.Email, token}
+	return c.JSON(http.StatusOK, userResponse)
+}
+
+// request POST 'http://127.0.0.1:8080/login/'
+func LoginUserController(c echo.Context) error {
+	user := models.Users{}
+	requser := models.Users{}
+	// fmt.Printf("user sebelum bind %#v\n", user)
+	if err := c.Bind(&requser); err != nil {
+		fmt.Println(err)
+		return c.String(http.StatusInternalServerError, "Internal Server Error")
+	}
+
+	// fmt.Printf("user setelah bind %#v\n", user)
+	fmt.Printf("Before insert: %#v\n", user)
+
+	if err := config.DB.Where("email=?", requser.Email).First(&user).Error; err != nil {
+		fmt.Println(err)
+		return c.String(http.StatusInternalServerError, "gagal login")
+	}
+	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(requser.Password))
+	if err != nil {
+		fmt.Println(err)
+		return c.String(http.StatusInternalServerError, "gagal login")
 	}
 	token, err := middlewares.CreateToken(user.Id, user.Name)
 
 	if err != nil {
 		fmt.Println(err)
-		return c.String(http.StatusInternalServerError, "gagal singup")
+		return c.String(http.StatusInternalServerError, "gagal login")
 	}
 	userResponse := models.UsersResponse{user.Id, user.Name, user.Email, token}
+
 	return c.JSON(http.StatusOK, userResponse)
 }
 
@@ -106,30 +142,4 @@ func DeleteUserController(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
 	return c.JSON(http.StatusOK, user)
-}
-
-// request POST 'http://127.0.0.1:8080/login/'
-func LoginUserController(c echo.Context) error {
-	user := models.Users{}
-	// fmt.Printf("user sebelum bind %#v\n", user)
-	if err := c.Bind(&user); err != nil {
-		fmt.Println(err)
-		return c.String(http.StatusInternalServerError, "Internal Server Error")
-	}
-	// fmt.Printf("user setelah bind %#v\n", user)
-	fmt.Printf("Before insert: %#v\n", user)
-	if err := config.DB.Where("email=? AND password=?", user.Email, user.Password).First(&user).Error; err != nil {
-		fmt.Println(err)
-		return c.String(http.StatusInternalServerError, "gagal login")
-	}
-
-	token, err := middlewares.CreateToken(user.Id, user.Name)
-
-	if err != nil {
-		fmt.Println(err)
-		return c.String(http.StatusInternalServerError, "gagal login")
-	}
-	userResponse := models.UsersResponse{user.Id, user.Name, user.Email, token}
-
-	return c.JSON(http.StatusOK, userResponse)
 }

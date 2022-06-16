@@ -58,7 +58,7 @@ func CreateTransactionsController(c echo.Context) error {
 		fmt.Println(err)
 		return c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
-	if err := config.DB.Preload("Users").Preload("Benefits").Find(&transactions).Error; err != nil {
+	if err := config.DB.Find(&transactions).Error; err != nil {
 		fmt.Println(err)
 		return c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
