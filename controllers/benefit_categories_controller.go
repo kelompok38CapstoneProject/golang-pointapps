@@ -7,7 +7,7 @@ import (
 
 	"point/config"
 	"point/models"
-	
+
 	"github.com/labstack/echo/v4"
 )
 
@@ -18,7 +18,7 @@ func GetBenefitCategorieControllerCode(c echo.Context) error {
 		fmt.Println(err)
 		return c.String(http.StatusBadRequest, "invalid id")
 	}
-	var benefitCategorie models.Benefit_Categories
+	var benefitCategorie models.BenefitCategories
 	if err := config.DB.First(&benefitCategorie, benefitCategorieId).Error; err != nil {
 		fmt.Println(err)
 		return c.String(http.StatusNotFound, "benefitCategorie not found")
@@ -31,24 +31,24 @@ func GetBenefitCategorieControllerCode(c echo.Context) error {
 
 // request GET 'http://127.0.0.1:8080/benefitCategorie/'
 func GetAllBenefitCategorieController(c echo.Context) error {
-	var benefitCategorie []models.Benefit_Categories
+	var benefitCategorie []models.BenefitCategories
 	if err := config.DB.Find(&benefitCategorie).Error; err != nil {
 		fmt.Println(err)
-		return c.String(http.StatusInternalServerError, "internal server error")
+		return c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
 	return c.JSON(http.StatusOK, benefitCategorie)
 }
 
 // request POST 'http://127.0.0.1:8080/benefitCategorie/'
 func CreateBenefitCategorieController(c echo.Context) error {
-	benefitCategorie := models.Benefit_Categories{}
+	benefitCategorie := models.BenefitCategories{}
 	if err := c.Bind(&benefitCategorie); err != nil {
 		fmt.Println(err)
-		return c.String(http.StatusInternalServerError, "internal server error")
+		return c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
 	if err := config.DB.Save(&benefitCategorie).Error; err != nil {
 		fmt.Println(err)
-		return c.String(http.StatusInternalServerError, "internal server error")
+		return c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
 	return c.JSON(http.StatusOK, benefitCategorie)
 }
@@ -60,7 +60,7 @@ func UpdateBenefitCategorieController(c echo.Context) error {
 		fmt.Println(err)
 		return c.String(http.StatusBadRequest, "invalid id")
 	}
-	var benefitCategorie models.Benefit_Categories
+	var benefitCategorie models.BenefitCategories
 	if err := config.DB.First(&benefitCategorie, benefitCategorieId).Error; err != nil {
 		fmt.Println(err)
 		return c.String(http.StatusNotFound, "benefitCategorie not found")
@@ -70,11 +70,11 @@ func UpdateBenefitCategorieController(c echo.Context) error {
 	}
 	if err := c.Bind(&benefitCategorie); err != nil {
 		fmt.Println(err)
-		return c.String(http.StatusInternalServerError, "internal server error")
+		return c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
 	if err := config.DB.Save(&benefitCategorie).Error; err != nil {
 		fmt.Println(err)
-		return c.String(http.StatusInternalServerError, "internal server error")
+		return c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
 	return c.JSON(http.StatusOK, benefitCategorie)
 }
@@ -86,7 +86,7 @@ func DeleteBenefitCategorieController(c echo.Context) error {
 		fmt.Println(err)
 		return c.String(http.StatusBadRequest, "invalid id")
 	}
-	var benefitCategorie models.Benefit_Categories
+	var benefitCategorie models.BenefitCategories
 	if err := config.DB.First(&benefitCategorie, benefitCategorieId).Error; err != nil {
 		fmt.Println(err)
 		return c.String(http.StatusNotFound, "benefitCategorie not found")
@@ -96,7 +96,7 @@ func DeleteBenefitCategorieController(c echo.Context) error {
 	}
 	if err := config.DB.Delete(&benefitCategorie).Error; err != nil {
 		fmt.Println(err)
-		return c.String(http.StatusInternalServerError, "internal server error")
+		return c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
 	return c.JSON(http.StatusOK, benefitCategorie)
 }

@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type Benefit_Categories struct {
+type BenefitCategories struct {
 	Id          int    `json:"id"`
 	Name        string `json:"name" `
 	Description string `json:"description"`

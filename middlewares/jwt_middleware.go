@@ -1,7 +1,7 @@
-package middleware
+package middlewares
 
 import (
-	"point/constants"
+	constant "point/constants"
 	"time"
 
 	"github.com/golang-jwt/jwt"
