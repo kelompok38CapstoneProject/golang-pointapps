@@ -3,11 +3,11 @@ package controllers
 import (
 	"fmt"
 	"net/http"
-	"strconv"
-	"point/middleware"
 	"point/config"
+	"point/middlewares"
 	"point/models"
-	
+	"strconv"
+
 	"github.com/labstack/echo/v4"
 )
 
@@ -29,12 +29,12 @@ func GetUserControllerCode(c echo.Context) error {
 	return c.JSON(http.StatusOK, user)
 }
 
-// request GET 'http://127.0.0.1:8080/user/'
+// request GET 'http://127.0.0.1:8080/users/'
 func GetAllUserController(c echo.Context) error {
 	var user []models.Users
 	if err := config.DB.Find(&user).Error; err != nil {
 		fmt.Println(err)
-		return c.String(http.StatusInternalServerError, "internal server error")
+		return c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
 	return c.JSON(http.StatusOK, user)
 }
@@ -44,13 +44,13 @@ func SingupUserController(c echo.Context) error {
 	user := models.Users{}
 	if err := c.Bind(&user); err != nil {
 		fmt.Println(err)
-		return c.String(http.StatusInternalServerError, "internal server error")
+		return c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
 	if err := config.DB.Save(&user).Error; err != nil {
 		fmt.Println(err)
-		return c.String(http.StatusInternalServerError, "internal server error")
+		return c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
-	token, err := middleware.CreateToken(user.Id, user.Name)
+	token, err := middlewares.CreateToken(user.Id, user.Name)
 
 	if err != nil {
 		fmt.Println(err)
@@ -77,11 +77,11 @@ func UpdateUserController(c echo.Context) error {
 	}
 	if err := c.Bind(&user); err != nil {
 		fmt.Println(err)
-		return c.String(http.StatusInternalServerError, "internal server error")
+		return c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
 	if err := config.DB.Save(&user).Error; err != nil {
 		fmt.Println(err)
-		return c.String(http.StatusInternalServerError, "internal server error")
+		return c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
 	return c.JSON(http.StatusOK, user)
 }
@@ -103,7 +103,7 @@ func DeleteUserController(c echo.Context) error {
 	}
 	if err := config.DB.Delete(&user).Error; err != nil {
 		fmt.Println(err)
-		return c.String(http.StatusInternalServerError, "internal server error")
+		return c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
 	return c.JSON(http.StatusOK, user)
 }
@@ -114,7 +114,7 @@ func LoginUserController(c echo.Context) error {
 	// fmt.Printf("user sebelum bind %#v\n", user)
 	if err := c.Bind(&user); err != nil {
 		fmt.Println(err)
-		return c.String(http.StatusInternalServerError, "internal server error")
+		return c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
 	// fmt.Printf("user setelah bind %#v\n", user)
 	fmt.Printf("Before insert: %#v\n", user)
@@ -123,7 +123,7 @@ func LoginUserController(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, "gagal login")
 	}
 
-	token, err := middleware.CreateToken(user.Id, user.Name)
+	token, err := middlewares.CreateToken(user.Id, user.Name)
 
 	if err != nil {
 		fmt.Println(err)
