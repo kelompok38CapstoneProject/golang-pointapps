@@ -15,6 +15,7 @@ func New() *echo.Echo {
 	e.POST("/login/", controllers.LoginUserController)
 	e.GET("/users/", controllers.GetAllUserController)
 	e.GET("/user/:code", controllers.GetUserControllerCode)
+	e.PUT("/addpointuser/:code", controllers.AddPointUserController)
 	//jwt_user
 	ejwt := e.Group("")
 	ejwt.Use(middleware.JWT([]byte(constant.SECRET_JWT)))

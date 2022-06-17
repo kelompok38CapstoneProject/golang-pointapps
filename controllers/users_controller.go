@@ -122,6 +122,34 @@ func UpdateUserController(c echo.Context) error {
 	return c.JSON(http.StatusOK, user)
 }
 
+// request PUT 'http://127.0.0.1:8080/user/id'
+func AddPointUserController(c echo.Context) error {
+	userId, err := strconv.Atoi(c.Param("code"))
+	if err != nil {
+		fmt.Println(err)
+		return c.String(http.StatusBadRequest, "invalid id")
+	}
+	var user models.Users
+	var reqUser models.Users
+	if err := config.DB.First(&user, userId).Error; err != nil {
+		fmt.Println(err)
+		return c.String(http.StatusNotFound, "user not found")
+	}
+	if user.Id == 0 {
+		return c.String(http.StatusNotFound, "user not found")
+	}
+	if err := c.Bind(&reqUser); err != nil {
+		fmt.Println(err)
+		return c.String(http.StatusInternalServerError, "Internal Server Error")
+	}
+	user.Point = user.Point + reqUser.Point
+	if err := config.DB.Save(&user).Error; err != nil {
+		fmt.Println(err)
+		return c.String(http.StatusInternalServerError, "Internal Server Error")
+	}
+	return c.JSON(http.StatusOK, user)
+}
+
 // request DELETE 'http://127.0.0.1:8080/user/id'
 func DeleteUserController(c echo.Context) error {
 	userId, err := strconv.Atoi(c.Param("code"))
