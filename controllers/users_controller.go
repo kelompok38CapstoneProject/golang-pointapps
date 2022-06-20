@@ -83,13 +83,13 @@ func LoginUserController(c echo.Context) error {
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(requser.Password))
 	if err != nil {
 		fmt.Println(err)
-		return c.String(http.StatusInternalServerError, "gagal login")
+		return c.String(http.StatusInternalServerError, "gagal login1")
 	}
 	token, err := middlewares.CreateToken(user.Id, user.Name)
 
 	if err != nil {
 		fmt.Println(err)
-		return c.String(http.StatusInternalServerError, "gagal login")
+		return c.String(http.StatusInternalServerError, "gagal login2")
 	}
 	userResponse := models.UsersResponse{user.Id, user.Name, user.Email, token}
 

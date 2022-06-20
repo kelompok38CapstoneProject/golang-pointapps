@@ -55,20 +55,49 @@ func CreateTransactionsController(c echo.Context) error {
 		fmt.Println(err)
 		return c.String(http.StatusInternalServerError, "Internal Server Error 1")
 	}
+	// Get User By ID
+	var user models.Users
+	if err := config.DB.First(&user, transactions.UserId).Error; err != nil {
+		fmt.Println(err)
+		return c.String(http.StatusInternalServerError, "Internal Server Error 2")
+	}
 	// Get Benefit By ID
 	var benefit models.Benefits
 	if err := config.DB.First(&benefit, transactions.BenefitId).Error; err != nil {
 		fmt.Println(err)
 		return c.String(http.StatusInternalServerError, "Internal Server Error 2")
 	}
-	// Reduce Benefit Stock By 1
-	if err := config.DB.Model(&benefit).Update("stock", benefit.Stock-1).Error; err != nil {
+	// Reduce Point User
+	if err := config.DB.Model(&user).Where("id = ?", user.Id).Update("point", user.Point-benefit.Price).Error; err != nil {
 		fmt.Println(err)
 		return c.String(http.StatusInternalServerError, "Internal Server Error 3")
 	}
-	if err := config.DB.Preload("User").Preload("Benefit").Preload("BenefitCategory").Find(&transactions).Error; err != nil {
+	// Point User < Benefit.Price
+	if user.Point < benefit.Price {
+		return c.String(http.StatusBadRequest, "Not Enough Point")
+	}
+	// Stock = 0
+	if benefit.Stock == 0 {
+		if err := config.DB.Model(&benefit).Update("stock", "0").Error; err != nil {
+			fmt.Println(err)
+			return c.String(http.StatusInternalServerError, "Stock Out")
+		}
+	} else {
+		// Reduce Benefit Stock By 1
+		if err := config.DB.Model(&benefit).Update("stock", benefit.Stock-1).Error; err != nil {
+			fmt.Println(err)
+			return c.String(http.StatusInternalServerError, "Internal Server Error 4")
+		}
+	}
+	// Reduce Benefit Stock By 1
+	if err := config.DB.Model(&benefit).Update("stock", benefit.Stock-1).Error; err != nil {
 		fmt.Println(err)
-		return c.String(http.StatusInternalServerError, "Internal Server Error 3")
+		return c.String(http.StatusInternalServerError, "Internal Server Error 4")
+	}
+
+	if err := config.DB.Preload("User").Preload("Benefit").Find(&transactions).Error; err != nil {
+		fmt.Println(err)
+		return c.String(http.StatusInternalServerError, "Internal Server Error 5")
 	}
 	return c.JSON(http.StatusOK, transactions)
 }

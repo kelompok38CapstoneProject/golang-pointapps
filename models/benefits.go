@@ -12,8 +12,8 @@ type Benefits struct {
 	BenefitCategory   BenefitCategories `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	Name              string            `json:"name" `
 	Description       string            `json:"description"`
-	Price             int               `json:"price"`
-	Stock             int               `json:"stock"`
+	Price             uint              `json:"price"`
+	Stock             uint              `json:"stock"`
 	CreatedAt         time.Time
 	UpdatedAt         time.Time
 	DeletedAt         gorm.DeletedAt `gorm:"index"`
