@@ -1,18 +1,21 @@
 package config
 
 import (
-	"fmt"
 	"point/models"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"os"
 )
 
 var DB *gorm.DB
 
 func InitDB() {
-	db := "pointapps"
-	connectionString := fmt.Sprintf("root:qqwerty@tcp(127.0.0.1:3306)/%s?parseTime=True", db)
+	connectionString := os.Getenv("APP_DB_CONNECTION_STRING")
+	if connectionString == "" {
+		connectionString = "root:efraim@tcp(127.0.0.1:3306)/point?charset=utf8&parseTime=True&loc=Local"
+	}
+	
 
 	var err error
 	DB, err = gorm.Open(mysql.Open(connectionString), &gorm.Config{})

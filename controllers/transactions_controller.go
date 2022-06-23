@@ -99,5 +99,11 @@ func CreateTransactionsController(c echo.Context) error {
 		fmt.Println(err)
 		return c.String(http.StatusInternalServerError, "Internal Server Error 5")
 	}
+
+	if err := config.DB.Save(&transactions).Error; err != nil {
+		fmt.Println(err)
+		return c.String(http.StatusInternalServerError, "Internal Server Error")
+	}
+
 	return c.JSON(http.StatusOK, transactions)
 }
