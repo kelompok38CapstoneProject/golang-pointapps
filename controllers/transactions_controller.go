@@ -95,14 +95,14 @@ func CreateTransactionsController(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, "Internal Server Error 4")
 	}
 
-	if err := config.DB.Preload("User").Preload("Benefit").Find(&transactions).Error; err != nil {
-		fmt.Println(err)
-		return c.String(http.StatusInternalServerError, "Internal Server Error 5")
-	}
-
 	if err := config.DB.Save(&transactions).Error; err != nil {
 		fmt.Println(err)
 		return c.String(http.StatusInternalServerError, "Internal Server Error")
+	}
+
+	if err := config.DB.Preload("User").Preload("Benefit").Find(&transactions).Error; err != nil {
+		fmt.Println(err)
+		return c.String(http.StatusInternalServerError, "Internal Server Error 5")
 	}
 
 	return c.JSON(http.StatusOK, transactions)
