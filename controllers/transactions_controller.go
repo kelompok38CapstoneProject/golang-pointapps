@@ -33,6 +33,24 @@ func GetTransactionsControllerCode(c echo.Context) error {
 	return c.JSON(http.StatusOK, transactions)
 }
 
+// request GET 'http://127.0.0.1:8080/transactions/id/users'
+func GetTransactionsUserControllerCode(c echo.Context) error {
+	transactionsId, err := strconv.Atoi(c.Param("code"))
+	if err != nil {
+		fmt.Println(err)
+		return c.String(http.StatusBadRequest, "invalid id")
+	}
+	var transactions []models.Transactions
+	if err := config.DB.Where("user_id=?", transactionsId).Preload("User").Preload("Benefit").Find(&transactions).Error; err != nil {
+		fmt.Println(err)
+		return c.String(http.StatusInternalServerError, "Internal Server Error")
+	}
+	if len(transactions) == 0 {
+		return c.String(http.StatusNotFound, "transactions not found")
+	}
+	return c.JSON(http.StatusOK, transactions)
+}
+
 // request GET 'http://127.0.0.1:8080/transactions/'
 func GetAllTransactionsController(c echo.Context) error {
 	var transactions []models.Transactions
@@ -95,7 +113,7 @@ func CreateTransactionsController(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, "Internal Server Error 4")
 	}
 
-	if err := config.DB.Save(&transactions).Error; err != nil {
+	if err := config.DB.Create(&transactions).Error; err != nil {
 		fmt.Println(err)
 		return c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
