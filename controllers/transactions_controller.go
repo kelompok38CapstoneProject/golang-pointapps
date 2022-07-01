@@ -98,7 +98,7 @@ func CreateTransactionsController(c echo.Context) error {
 		if err := config.DB.Model(&benefit).Update("stock", benefit.Stock-1).Error; err != nil {
 			fmt.Println(err)
 			return c.String(http.StatusInternalServerError, "Internal Server Error 4")
-		}
+		}	
 	}
 	if err := config.DB.Create(&transactions).Error; err != nil {
 		fmt.Println(err)

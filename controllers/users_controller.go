@@ -48,6 +48,13 @@ func SingupUserController(c echo.Context) error {
 		fmt.Println(err)
 		return c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
+	var email string
+	if err := config.DB.Table("users").Select("email").Where("email=?", reqUser.Email).Find(&email).Error; err != nil {
+		return err
+	}
+	if email != "" {
+		return c.String(http.StatusInternalServerError, "email used")
+	}
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(reqUser.Password), bcrypt.DefaultCost)
 	reqUser.Password = string(hashedPassword)
 	if err := config.DB.Save(&reqUser).Error; err != nil {
