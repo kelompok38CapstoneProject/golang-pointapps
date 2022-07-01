@@ -23,7 +23,7 @@ func GetBenefitCategorieControllerCode(c echo.Context) error {
 		fmt.Println(err)
 		return c.String(http.StatusNotFound, "benefitCategorie not found")
 	}
-	if benefitCategorie.Id == 0 {
+	if benefitCategorie.ID == 0 {
 		return c.String(http.StatusNotFound, "benefitCategorie not found")
 	}
 	return c.JSON(http.StatusOK, benefitCategorie)
@@ -65,7 +65,7 @@ func UpdateBenefitCategorieController(c echo.Context) error {
 		fmt.Println(err)
 		return c.String(http.StatusNotFound, "benefitCategorie not found")
 	}
-	if benefitCategorie.Id == 0 {
+	if benefitCategorie.ID == 0 {
 		return c.String(http.StatusNotFound, "benefitCategorie not found")
 	}
 	if err := c.Bind(&benefitCategorie); err != nil {
@@ -91,7 +91,7 @@ func DeleteBenefitCategorieController(c echo.Context) error {
 		fmt.Println(err)
 		return c.String(http.StatusNotFound, "benefitCategorie not found")
 	}
-	if benefitCategorie.Id == 0 {
+	if benefitCategorie.ID == 0 {
 		return c.String(http.StatusNotFound, "benefitCategorie not found")
 	}
 	if err := config.DB.Delete(&benefitCategorie).Error; err != nil {

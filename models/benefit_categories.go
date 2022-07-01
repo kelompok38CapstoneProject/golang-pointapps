@@ -7,7 +7,7 @@ import (
 )
 
 type BenefitCategories struct {
-	Id          int    `json:"id"`
+	ID          int    `json:"id"`
 	Name        string `json:"name" `
 	Description string `json:"description"`
 	CreatedAt   time.Time

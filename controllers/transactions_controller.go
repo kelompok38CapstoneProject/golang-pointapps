@@ -23,10 +23,10 @@ func GetTransactionsControllerCode(c echo.Context) error {
 		fmt.Println(err)
 		return c.String(http.StatusNotFound, "transactions not found")
 	}
-	if transactions.Id == 0 {
+	if transactions.ID == 0 {
 		return c.String(http.StatusNotFound, "transactions not found")
 	}
-	if err := config.DB.Preload("User").Preload("Benefit").Find(&transactions).Error; err != nil {
+	if err := config.DB.Preload("User").Preload("Benefit.BenefitCategory").Find(&transactions).Error; err != nil {
 		fmt.Println(err)
 		return c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
@@ -41,7 +41,7 @@ func GetTransactionsUserControllerCode(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "invalid id")
 	}
 	var transactions []models.Transactions
-	if err := config.DB.Where("user_id=?", transactionsId).Preload("User").Preload("Benefit").Find(&transactions).Error; err != nil {
+	if err := config.DB.Where("user_id=?", transactionsId).Preload("User").Preload("Benefit.BenefitCategory").Find(&transactions).Error; err != nil {
 		fmt.Println(err)
 		return c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
@@ -54,11 +54,7 @@ func GetTransactionsUserControllerCode(c echo.Context) error {
 // request GET 'http://127.0.0.1:8080/transactions/'
 func GetAllTransactionsController(c echo.Context) error {
 	var transactions []models.Transactions
-	if err := config.DB.Find(&transactions).Error; err != nil {
-		fmt.Println(err)
-		return c.String(http.StatusInternalServerError, "Internal Server Error")
-	}
-	if err := config.DB.Preload("User").Preload("Benefit").Find(&transactions).Error; err != nil {
+	if err := config.DB.Preload("User").Preload("Benefit.BenefitCategory").Find(&transactions).Error; err != nil {
 		fmt.Println(err)
 		return c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
@@ -75,18 +71,18 @@ func CreateTransactionsController(c echo.Context) error {
 	}
 	// Get User By ID
 	var user models.Users
-	if err := config.DB.First(&user, transactions.UserId).Error; err != nil {
+	if err := config.DB.First(&user, transactions.UserID).Error; err != nil {
 		fmt.Println(err)
 		return c.String(http.StatusInternalServerError, "Internal Server Error 2")
 	}
 	// Get Benefit By ID
 	var benefit models.Benefits
-	if err := config.DB.First(&benefit, transactions.BenefitId).Error; err != nil {
+	if err := config.DB.First(&benefit, transactions.BenefitID).Error; err != nil {
 		fmt.Println(err)
 		return c.String(http.StatusInternalServerError, "Internal Server Error 2")
 	}
 	// Reduce Point User
-	if err := config.DB.Model(&user).Where("id = ?", user.Id).Update("point", user.Point-benefit.Price).Error; err != nil {
+	if err := config.DB.Model(&user).Where("id = ?", user.ID).Update("point", user.Point-benefit.Price).Error; err != nil {
 		fmt.Println(err)
 		return c.String(http.StatusInternalServerError, "Internal Server Error 3")
 	}
@@ -96,10 +92,7 @@ func CreateTransactionsController(c echo.Context) error {
 	}
 	// Stock = 0
 	if benefit.Stock == 0 {
-		if err := config.DB.Model(&benefit).Update("stock", "0").Error; err != nil {
-			fmt.Println(err)
 			return c.String(http.StatusInternalServerError, "Stock Out")
-		}
 	} else {
 		// Reduce Benefit Stock By 1
 		if err := config.DB.Model(&benefit).Update("stock", benefit.Stock-1).Error; err != nil {
@@ -107,18 +100,12 @@ func CreateTransactionsController(c echo.Context) error {
 			return c.String(http.StatusInternalServerError, "Internal Server Error 4")
 		}
 	}
-	// Reduce Benefit Stock By 1
-	if err := config.DB.Model(&benefit).Update("stock", benefit.Stock-1).Error; err != nil {
-		fmt.Println(err)
-		return c.String(http.StatusInternalServerError, "Internal Server Error 4")
-	}
-
 	if err := config.DB.Create(&transactions).Error; err != nil {
 		fmt.Println(err)
 		return c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
 
-	if err := config.DB.Preload("User").Preload("Benefit").Find(&transactions).Error; err != nil {
+	if err := config.DB.Preload("User").Preload("Benefit.BenefitCategory").Find(&transactions).Error; err != nil {
 		fmt.Println(err)
 		return c.String(http.StatusInternalServerError, "Internal Server Error 5")
 	}

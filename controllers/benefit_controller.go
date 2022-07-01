@@ -23,7 +23,7 @@ func GetBenefitsControllerCode(c echo.Context) error {
 		fmt.Println(err)
 		return c.String(http.StatusNotFound, "benefits not found")
 	}
-	if benefits.Id == 0 {
+	if benefits.ID == 0 {
 		return c.String(http.StatusNotFound, "benefits not found")
 	}
 	if err := config.DB.Preload("BenefitCategory").Find(&benefits).Error; err != nil {
@@ -60,7 +60,7 @@ func AddBenefitsController(c echo.Context) error {
 		fmt.Println(err)
 		return c.String(http.StatusNotFound, "benefits not found")
 	}
-	if benefits.Id == 0 {
+	if benefits.ID == 0 {
 		return c.String(http.StatusNotFound, "benefits not found")
 	}
 	if err := c.Bind(&reqBenefits); err != nil {
@@ -110,7 +110,7 @@ func UpdateBenefitsController(c echo.Context) error {
 		fmt.Println(err)
 		return c.String(http.StatusNotFound, "benefits not found")
 	}
-	if benefits.Id == 0 {
+	if benefits.ID == 0 {
 		return c.String(http.StatusNotFound, "benefits not found")
 	}
 	if err := c.Bind(&benefits); err != nil {
@@ -140,7 +140,7 @@ func DeleteBenefitsController(c echo.Context) error {
 		fmt.Println(err)
 		return c.String(http.StatusNotFound, "benefits not found")
 	}
-	if benefits.Id == 0 {
+	if benefits.ID == 0 {
 		return c.String(http.StatusNotFound, "benefits not found")
 	}
 	if err := config.DB.Delete(&benefits).Error; err != nil {

@@ -7,8 +7,8 @@ import (
 )
 
 type Benefits struct {
-	Id                int               `json:"id"`
-	BenefitCategoryId int               `json:"benefit_category_id"`
+	ID                int               `json:"id"`
+	BenefitCategoryID int               `json:"benefit_category_id"`
 	BenefitCategory   BenefitCategories `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	Name              string            `json:"name" `
 	Description       string            `json:"description"`

@@ -24,7 +24,7 @@ func GetUserControllerCode(c echo.Context) error {
 		fmt.Println(err)
 		return c.String(http.StatusNotFound, "user not found")
 	}
-	if user.Id == 0 {
+	if user.ID == 0 {
 		return c.String(http.StatusNotFound, "user not found")
 	}
 	return c.JSON(http.StatusOK, user)
@@ -54,12 +54,12 @@ func SingupUserController(c echo.Context) error {
 		fmt.Println(err)
 		return c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
-	token, err := middlewares.CreateToken(reqUser.Id, reqUser.Name)
+	token, err := middlewares.CreateToken(reqUser.ID, reqUser.Name)
 	if err != nil {
 		fmt.Println(err)
 		return c.String(http.StatusInternalServerError, "gagal singup")
 	}
-	userResponse := models.UsersResponse{reqUser.Id, reqUser.Name, reqUser.Email, token}
+	userResponse := models.UsersResponse{reqUser.ID, reqUser.Name, reqUser.Email, token}
 	return c.JSON(http.StatusOK, userResponse)
 }
 
@@ -85,13 +85,13 @@ func LoginUserController(c echo.Context) error {
 		fmt.Println(err)
 		return c.String(http.StatusInternalServerError, "gagal login1")
 	}
-	token, err := middlewares.CreateToken(user.Id, user.Name)
+	token, err := middlewares.CreateToken(user.ID, user.Name)
 
 	if err != nil {
 		fmt.Println(err)
 		return c.String(http.StatusInternalServerError, "gagal login2")
 	}
-	userResponse := models.UsersResponse{user.Id, user.Name, user.Email, token}
+	userResponse := models.UsersResponse{user.ID, user.Name, user.Email, token}
 
 	return c.JSON(http.StatusOK, userResponse)
 }
@@ -108,7 +108,7 @@ func UpdateUserController(c echo.Context) error {
 		fmt.Println(err)
 		return c.String(http.StatusNotFound, "user not found")
 	}
-	if user.Id == 0 {
+	if user.ID == 0 {
 		return c.String(http.StatusNotFound, "user not found")
 	}
 	if err := c.Bind(&user); err != nil {
@@ -135,7 +135,7 @@ func AddPointUserController(c echo.Context) error {
 		fmt.Println(err)
 		return c.String(http.StatusNotFound, "user not found")
 	}
-	if user.Id == 0 {
+	if user.ID == 0 {
 		return c.String(http.StatusNotFound, "user not found")
 	}
 	if err := c.Bind(&reqUser); err != nil {
@@ -162,7 +162,7 @@ func DeleteUserController(c echo.Context) error {
 		fmt.Println(err)
 		return c.String(http.StatusNotFound, "user not found")
 	}
-	if user.Id == 0 {
+	if user.ID == 0 {
 		return c.String(http.StatusNotFound, "user not found")
 	}
 	if err := config.DB.Delete(&user).Error; err != nil {
