@@ -53,7 +53,7 @@ func SingupUserController(c echo.Context) error {
 		return err
 	}
 	if email != "" {
-		return c.String(http.StatusInternalServerError, "email used")
+		return c.String(http.StatusInternalServerError, "email is already registered")
 	}
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(reqUser.Password), bcrypt.DefaultCost)
 	reqUser.Password = string(hashedPassword)

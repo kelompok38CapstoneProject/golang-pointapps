@@ -73,18 +73,13 @@ func CreateTransactionsController(c echo.Context) error {
 	var user models.Users
 	if err := config.DB.First(&user, transactions.UserID).Error; err != nil {
 		fmt.Println(err)
-		return c.String(http.StatusInternalServerError, "Internal Server Error 2")
+		return c.String(http.StatusInternalServerError, "User not found")
 	}
 	// Get Benefit By ID
 	var benefit models.Benefits
 	if err := config.DB.First(&benefit, transactions.BenefitID).Error; err != nil {
 		fmt.Println(err)
-		return c.String(http.StatusInternalServerError, "Internal Server Error 2")
-	}
-	// Reduce Point User
-	if err := config.DB.Model(&user).Where("id = ?", user.ID).Update("point", user.Point-benefit.Price).Error; err != nil {
-		fmt.Println(err)
-		return c.String(http.StatusInternalServerError, "Internal Server Error 3")
+		return c.String(http.StatusInternalServerError, "Benefit not found")
 	}
 	// Point User < Benefit.Price
 	if user.Point < benefit.Price {
@@ -92,14 +87,20 @@ func CreateTransactionsController(c echo.Context) error {
 	}
 	// Stock = 0
 	if benefit.Stock == 0 {
-			return c.String(http.StatusInternalServerError, "Stock Out")
+		return c.String(http.StatusInternalServerError, "Stock Out")
 	} else {
 		// Reduce Benefit Stock By 1
 		if err := config.DB.Model(&benefit).Update("stock", benefit.Stock-1).Error; err != nil {
 			fmt.Println(err)
 			return c.String(http.StatusInternalServerError, "Internal Server Error 4")
-		}	
+		}
 	}
+	// Reduce Point User
+	if err := config.DB.Model(&user).Where("id = ?", user.ID).Update("point", user.Point-benefit.Price).Error; err != nil {
+		fmt.Println(err)
+		return c.String(http.StatusInternalServerError, "Internal Server Error 3")
+	}
+
 	if err := config.DB.Create(&transactions).Error; err != nil {
 		fmt.Println(err)
 		return c.String(http.StatusInternalServerError, "Internal Server Error")
