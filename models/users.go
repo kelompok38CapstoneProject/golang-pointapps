@@ -22,5 +22,6 @@ type UsersResponse struct {
 	Id    int    `json:"id"`
 	Nama  string `json:"nama" `
 	Email string `json:"email"`
+	Phone string `json:"phone"`
 	Token string `json:"token"`
 }

@@ -66,7 +66,7 @@ func SingupUserController(c echo.Context) error {
 		fmt.Println(err)
 		return c.String(http.StatusInternalServerError, "gagal singup")
 	}
-	userResponse := models.UsersResponse{reqUser.ID, reqUser.Name, reqUser.Email, token}
+	userResponse := models.UsersResponse{reqUser.ID, reqUser.Name, reqUser.Email, reqUser.Phone, token}
 	return c.JSON(http.StatusOK, userResponse)
 }
 
@@ -98,7 +98,7 @@ func LoginUserController(c echo.Context) error {
 		fmt.Println(err)
 		return c.String(http.StatusInternalServerError, "gagal login2")
 	}
-	userResponse := models.UsersResponse{user.ID, user.Name, user.Email, token}
+	userResponse := models.UsersResponse{user.ID, user.Name, user.Email, user.Phone, token}
 
 	return c.JSON(http.StatusOK, userResponse)
 }
