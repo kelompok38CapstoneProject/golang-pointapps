@@ -1,43 +1,49 @@
 package route
 
 import (
-	constant "point/constants"
-	"point/controllers"
-
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	constant "point/constants"
+	"point/controllers"
+	"point/middlewares"
 )
 
 func New() *echo.Echo {
 	e := echo.New()
-	//users
-	e.POST("/singup/", controllers.SingupUserController)
-	e.POST("/login/", controllers.LoginUserController)
-	e.GET("/users/", controllers.GetAllUserController)
-	e.GET("/user/:code", controllers.GetUserControllerCode)
-	e.PUT("/addpointuser/:code", controllers.AddPointUserController)
-	//jwt_user
 	ejwt := e.Group("")
+	//users
 	ejwt.Use(middleware.JWT([]byte(constant.SECRET_JWT)))
-	ejwt.PUT("/user/:code", controllers.UpdateUserController)
-	ejwt.DELETE("/user/:code", controllers.DeleteUserController)
+	e.POST("/singup/", controllers.SingupUserController)
+	e.POST("/login/user", controllers.LoginUserController)
+	e.POST("/login/admin", controllers.LoginUserController)
+
+	ejwt.POST("/users/role/admin/", controllers.CreateUserRoleAdminController, middlewares.AdminRole)
+	ejwt.POST("/users/role/user/", controllers.CreateUserRoleUserController, middlewares.AdminRole)
+	ejwt.GET("/users/role/admin/", controllers.GetAllUserRoleAdminController, middlewares.AdminRole)
+	ejwt.GET("/users/role/user/", controllers.GetAllUserRoleUserController)
+	ejwt.GET("/users/:code", controllers.GetUserControllerCode)
+	ejwt.PUT("/addpointusers/:code", controllers.AddPointUserController, middlewares.AdminRole)
+	ejwt.PUT("/users/:code", controllers.UpdateUserController)
+	ejwt.DELETE("/users/:code", controllers.DeleteUserController, middlewares.AdminRole)
+	ejwt.GET("/users/", controllers.GetAllUserController, middlewares.AdminRole)
 	//BenefitCategories_controller
-	e.POST("/benefitCategorie/", controllers.CreateBenefitCategorieController)
-	e.GET("/benefitCategories/", controllers.GetAllBenefitCategorieController)
-	e.GET("/benefitCategorie/:code", controllers.GetBenefitCategorieControllerCode)
-	e.PUT("/benefitCategorie/:code", controllers.UpdateBenefitCategorieController)
-	e.DELETE("/benefitCategorie/:code", controllers.DeleteBenefitCategorieController)
+	ejwt.POST("/benefitCategories/", controllers.CreateBenefitCategorieController, middlewares.AdminRole)
+	ejwt.GET("/benefitCategories/", controllers.GetAllBenefitCategorieController)
+	ejwt.GET("/benefitCategories/:code", controllers.GetBenefitCategorieControllerCode)
+	ejwt.PUT("/benefitCategories/:code", controllers.UpdateBenefitCategorieController, middlewares.AdminRole)
+	ejwt.DELETE("/benefitCategorie/:code", controllers.DeleteBenefitCategorieController, middlewares.AdminRole)
 	//benefits_controller
-	e.POST("/benefit/", controllers.CreateBenefitsController)
-	e.GET("/benefits/", controllers.GetAllBenefitsController)
-	e.POST("/benefit/add/:code", controllers.AddBenefitsController)
-	e.GET("/benefit/:code", controllers.GetBenefitsControllerCode)
-	e.PUT("/benefit/:code", controllers.UpdateBenefitsController)
-	e.DELETE("/benefit/:code", controllers.DeleteBenefitsController)
+	ejwt.POST("/benefits/", controllers.CreateBenefitsController, middlewares.AdminRole)
+	ejwt.GET("/benefits/", controllers.GetAllBenefitsController)
+	ejwt.GET("/benefits/benefitCategoryId/:code", controllers.GetBenefitCategoryIDControllerCode)
+	ejwt.POST("/benefits/add/:code", controllers.AddBenefitsController, middlewares.AdminRole)
+	ejwt.GET("/benefits/:code", controllers.GetBenefitsControllerCode)
+	ejwt.PUT("/benefits/:code", controllers.UpdateBenefitsController, middlewares.AdminRole)
+	ejwt.DELETE("/benefits/:code", controllers.DeleteBenefitsController, middlewares.AdminRole)
 	// transactions
-	e.POST("/transaction/", controllers.CreateTransactionsController)
-	e.GET("/transactions/", controllers.GetAllTransactionsController)
-	e.GET("/transaction/:code", controllers.GetTransactionsControllerCode)
-	e.GET("/transaction/:code/users", controllers.GetTransactionsUserControllerCode)
+	ejwt.POST("/transactions/", controllers.CreateTransactionsController)
+	ejwt.GET("/transactions/", controllers.GetAllTransactionsController)
+	ejwt.GET("/transactions/:code", controllers.GetTransactionsControllerCode)
+	ejwt.GET("/transactions/:code/users", controllers.GetTransactionsUserControllerCode)
 	return e
 }

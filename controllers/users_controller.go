@@ -40,6 +40,90 @@ func GetAllUserController(c echo.Context) error {
 	return c.JSON(http.StatusOK, user)
 }
 
+// request GET 'http://127.0.0.1:8080/users/role/admin'
+func GetAllUserRoleAdminController(c echo.Context) error {
+
+	var user []models.Users
+	if err := config.DB.Where("role=?", "admin").Find(&user).Error; err != nil {
+		fmt.Println(err)
+		return c.String(http.StatusInternalServerError, "Internal Server Error")
+	}
+	return c.JSON(http.StatusOK, user)
+}
+
+// request GET 'http://127.0.0.1:8080/users/role/User'
+func GetAllUserRoleUserController(c echo.Context) error {
+
+	var user []models.Users
+	if err := config.DB.Where("role=?", "user").Find(&user).Error; err != nil {
+		fmt.Println(err)
+		return c.String(http.StatusInternalServerError, "Internal Server Error")
+	}
+	return c.JSON(http.StatusOK, user)
+}
+
+
+func CreateUserRoleAdminController(c echo.Context) error {
+	var reqUser models.Users
+
+	if err := c.Bind(&reqUser); err != nil {
+		fmt.Println(err)
+		return c.String(http.StatusInternalServerError, "Internal Server Error")
+	}
+	var email string
+	if err := config.DB.Table("users").Select("email").Where("email=?", reqUser.Email).Find(&email).Error; err != nil {
+		return err
+	}
+	if email != "" {
+		return c.String(http.StatusInternalServerError, "email is already registered")
+	}
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(reqUser.Password), bcrypt.DefaultCost)
+	reqUser.Password = string(hashedPassword)
+	reqUser.Role = "admin"
+	if err := config.DB.Save(&reqUser).Error; err != nil {
+		fmt.Println(err)
+		return c.String(http.StatusInternalServerError, "Internal Server Error")
+	}
+	token, err := middlewares.CreateToken(reqUser.ID, reqUser.Name, reqUser.Role)
+	if err != nil {
+		fmt.Println(err)
+		return c.String(http.StatusInternalServerError, "gagal singup")
+	}
+	userResponse := models.UsersResponse{reqUser.ID, reqUser.Name, reqUser.Email, reqUser.Phone, reqUser.Role, token}
+	return c.JSON(http.StatusOK, userResponse)
+}
+
+// request POST 'http://127.0.0.1:8080/singup/'
+func CreateUserRoleUserController(c echo.Context) error {
+	var reqUser models.Users
+
+	if err := c.Bind(&reqUser); err != nil {
+		fmt.Println(err)
+		return c.String(http.StatusInternalServerError, "Internal Server Error")
+	}
+	var email string
+	if err := config.DB.Table("users").Select("email").Where("email=?", reqUser.Email).Find(&email).Error; err != nil {
+		return err
+	}
+	if email != "" {
+		return c.String(http.StatusInternalServerError, "email is already registered")
+	}
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(reqUser.Password), bcrypt.DefaultCost)
+	reqUser.Password = string(hashedPassword)
+	reqUser.Role = "user"
+	if err := config.DB.Save(&reqUser).Error; err != nil {
+		fmt.Println(err)
+		return c.String(http.StatusInternalServerError, "Internal Server Error")
+	}
+	token, err := middlewares.CreateToken(reqUser.ID, reqUser.Name, reqUser.Role)
+	if err != nil {
+		fmt.Println(err)
+		return c.String(http.StatusInternalServerError, "gagal singup")
+	}
+	userResponse := models.UsersResponse{reqUser.ID, reqUser.Name, reqUser.Email, reqUser.Phone, reqUser.Role, token}
+	return c.JSON(http.StatusOK, userResponse)
+}
+
 // request POST 'http://127.0.0.1:8080/singup/'
 func SingupUserController(c echo.Context) error {
 	var reqUser models.Users
@@ -57,16 +141,17 @@ func SingupUserController(c echo.Context) error {
 	}
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(reqUser.Password), bcrypt.DefaultCost)
 	reqUser.Password = string(hashedPassword)
+	reqUser.Role = "user"
 	if err := config.DB.Save(&reqUser).Error; err != nil {
 		fmt.Println(err)
 		return c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
-	token, err := middlewares.CreateToken(reqUser.ID, reqUser.Name)
+	token, err := middlewares.CreateToken(reqUser.ID, reqUser.Name, reqUser.Role)
 	if err != nil {
 		fmt.Println(err)
 		return c.String(http.StatusInternalServerError, "gagal singup")
 	}
-	userResponse := models.UsersResponse{reqUser.ID, reqUser.Name, reqUser.Email, reqUser.Phone, token}
+	userResponse := models.UsersResponse{reqUser.ID, reqUser.Name, reqUser.Email, reqUser.Phone, reqUser.Role, token}
 	return c.JSON(http.StatusOK, userResponse)
 }
 
@@ -92,13 +177,13 @@ func LoginUserController(c echo.Context) error {
 		fmt.Println(err)
 		return c.String(http.StatusInternalServerError, "gagal login1")
 	}
-	token, err := middlewares.CreateToken(user.ID, user.Name)
+	token, err := middlewares.CreateToken(user.ID, user.Name, user.Role)
 
 	if err != nil {
 		fmt.Println(err)
 		return c.String(http.StatusInternalServerError, "gagal login2")
 	}
-	userResponse := models.UsersResponse{user.ID, user.Name, user.Email, user.Phone, token}
+	userResponse := models.UsersResponse{user.ID, user.Name, user.Email, user.Phone, user.Role, token}
 
 	return c.JSON(http.StatusOK, userResponse)
 }

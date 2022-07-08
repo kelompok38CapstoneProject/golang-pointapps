@@ -61,6 +61,7 @@ func GetAllTransactionsController(c echo.Context) error {
 	return c.JSON(http.StatusOK, transactions)
 }
 
+
 // request POST 'http://127.0.0.1:8080/transaction/'
 func CreateTransactionsController(c echo.Context) error {
 	transactions := models.Transactions{}

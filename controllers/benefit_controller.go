@@ -47,6 +47,24 @@ func GetAllBenefitsController(c echo.Context) error {
 	return c.JSON(http.StatusOK, benefits)
 }
 
+// request GET 'http://127.0.0.1:8080/benefits/BenefitCategoryID'
+func GetBenefitCategoryIDControllerCode(c echo.Context) error {
+	benefitsId, err := strconv.Atoi(c.Param("code"))
+	if err != nil {
+		fmt.Println(err)
+		return c.String(http.StatusBadRequest, "invalid id")
+	}
+	var benefits []models.Benefits
+	if err := config.DB.Where("benefit_category_id=?", benefitsId).Preload("BenefitCategory").Find(&benefits).Error; err != nil {
+		fmt.Println(err)
+		return c.String(http.StatusNotFound, "benefits not found")
+	}
+	if len(benefits) == 0 {
+		return c.String(http.StatusNotFound, "transactions not found")
+	}
+	return c.JSON(http.StatusOK, benefits)
+}
+
 // request PUT 'http://127.0.0.1:8080/benefits/add/id'
 func AddBenefitsController(c echo.Context) error {
 	benefitsId, err := strconv.Atoi(c.Param("code"))
