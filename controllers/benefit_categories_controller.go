@@ -36,7 +36,8 @@ func GetAllBenefitCategorieController(c echo.Context) error {
 		fmt.Println(err)
 		return c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
-	return c.JSON(http.StatusOK, benefitCategorie)
+	// return c.JSON(http.StatusOK, benefitCategorie)
+	return c.JSON(200, map[string]interface{}{"benefitCategories": benefitCategorie})
 }
 
 // request POST 'http://127.0.0.1:8080/benefitCategorie/'

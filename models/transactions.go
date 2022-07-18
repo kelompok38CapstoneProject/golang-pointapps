@@ -12,7 +12,7 @@ type Transactions struct {
 	User      Users          `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	BenefitID int            `json:"benefit_id"`
 	Benefit   Benefits       `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
-	CreatedAt time.Time      `json:"-"`
+	CreatedAt time.Time      
 	UpdatedAt time.Time      `json:"-"`
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 }

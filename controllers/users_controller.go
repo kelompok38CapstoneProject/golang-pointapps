@@ -37,7 +37,8 @@ func GetAllUserController(c echo.Context) error {
 		fmt.Println(err)
 		return c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
-	return c.JSON(http.StatusOK, user)
+	// return c.JSON(http.StatusOK, user)
+	return c.JSON(200, map[string]interface{}{"users": user})
 }
 
 // request GET 'http://127.0.0.1:8080/users/role/admin'
@@ -48,7 +49,7 @@ func GetAllUserRoleAdminController(c echo.Context) error {
 		fmt.Println(err)
 		return c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
-	return c.JSON(http.StatusOK, user)
+	return c.JSON(200, map[string]interface{}{"admin": user})
 }
 
 // request GET 'http://127.0.0.1:8080/users/role/User'
@@ -59,7 +60,9 @@ func GetAllUserRoleUserController(c echo.Context) error {
 		fmt.Println(err)
 		return c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
-	return c.JSON(http.StatusOK, user)
+	return c.JSON(200, map[string]interface{}{"user": user})
+
+
 }
 
 

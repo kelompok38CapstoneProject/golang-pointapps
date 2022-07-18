@@ -44,7 +44,8 @@ func GetAllBenefitsController(c echo.Context) error {
 		fmt.Println(err)
 		return c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
-	return c.JSON(http.StatusOK, benefits)
+	// return c.JSON(http.StatusOK, benefits)
+	return c.JSON(200, map[string]interface{}{"benefits": benefits})
 }
 
 // request GET 'http://127.0.0.1:8080/benefits/BenefitCategoryID'
@@ -62,7 +63,9 @@ func GetBenefitCategoryIDControllerCode(c echo.Context) error {
 	if len(benefits) == 0 {
 		return c.String(http.StatusNotFound, "transactions not found")
 	}
-	return c.JSON(http.StatusOK, benefits)
+	// return c.JSON(http.StatusOK, benefits)
+	return c.JSON(200, map[string]interface{}{"BenefitCategoriesId": benefits})
+	
 }
 
 // request PUT 'http://127.0.0.1:8080/benefits/add/id'

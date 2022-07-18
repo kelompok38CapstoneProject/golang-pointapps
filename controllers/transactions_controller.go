@@ -48,7 +48,9 @@ func GetTransactionsUserControllerCode(c echo.Context) error {
 	if len(transactions) == 0 {
 		return c.String(http.StatusNotFound, "transactions not found")
 	}
-	return c.JSON(http.StatusOK, transactions)
+	// return c.JSON(http.StatusOK, transactions)
+	return c.JSON(200, map[string]interface{}{"user transactions": transactions})
+	
 }
 
 // request GET 'http://127.0.0.1:8080/transactions/'
@@ -58,7 +60,9 @@ func GetAllTransactionsController(c echo.Context) error {
 		fmt.Println(err)
 		return c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
-	return c.JSON(http.StatusOK, transactions)
+	// return c.JSON(http.StatusOK, transactions)
+	return c.JSON(200, map[string]interface{}{"transactions": transactions})
+	
 }
 
 
