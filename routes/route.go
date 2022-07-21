@@ -10,6 +10,7 @@ import (
 
 func New() *echo.Echo {
 	e := echo.New()
+	e.Use(middleware.CORS())
 	ejwt := e.Group("")
 	//users
 	ejwt.Use(middleware.JWT([]byte(constant.SECRET_JWT)))
